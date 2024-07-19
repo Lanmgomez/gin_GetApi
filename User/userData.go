@@ -1,7 +1,7 @@
 package User
 
 type USERS struct {
-	ID       float64
+	ID       int
 	Name     string
 	Email    string
 	CreatAt  string
@@ -20,7 +20,7 @@ func UsersData() []USERS {
 	for index, user := range users {
 		var currentUser USERS
 
-		currentUser.ID = float64(index) + 1
+		currentUser.ID = int(index) + 1
 		currentUser.Name = user.Name
 		currentUser.Email = user.Email
 		currentUser.CreatAt = user.CreatAt
