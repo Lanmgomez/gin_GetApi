@@ -1,11 +1,11 @@
 package User
 
 type USERS struct {
-	ID       int
-	Name     string
-	Email    string
-	CreatAt  string
-	UpdateAt string
+	ID       int    `json:"id"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	CreatAt  string `json:"createAt"`
+	UpdateAt string `json:"updateAt"`
 }
 
 func UsersData() []USERS {
