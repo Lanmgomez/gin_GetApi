@@ -38,6 +38,37 @@ func userData(c *gin.Context) {
 	c.JSON(200, finalUsers)
 }
 
+// teste GET
+// passar essa função depois lá para o userData
+func getUsers(c *gin.Context) {
+	rows, err := db.Query("SELECT * FROM users")
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	defer rows.Close()
+
+	var users []User.USERS
+
+	for rows.Next() {
+		var user User.USERS
+
+		if err := rows.Scan(&user.ID, &user.Name, &user.Email, &user.CreateAt, &user.UpdateAt); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		users = append(users, user)
+	}
+
+	fmt.Println(users)
+	c.JSON(http.StatusOK, users)
+
+	return
+}
+
 func postUsers(c *gin.Context) {
 	var newUser User.USERS
 	finalUsers := User.UsersData()
@@ -57,7 +88,7 @@ func postUsers(c *gin.Context) {
 		newUser.ID,
 		newUser.Name,
 		newUser.Email,
-		newUser.CreatAt,
+		newUser.CreateAt,
 		newUser.UpdateAt,
 	)
 
@@ -74,7 +105,7 @@ func main() {
 	initDB()
 	router := gin.Default()
 
-	router.GET("/users", userData)
+	router.GET("/users" /* userData */, getUsers)
 	router.POST("/users", postUsers)
 
 	router.Run(":5000")
