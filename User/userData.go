@@ -8,6 +8,13 @@ type USERS struct {
 	UpdateAt string `json:"updateAt"`
 }
 
+type USER_STATUS_UPDATE_INPUT struct {
+	UserID          int    `json:"userid"`
+	Status          string `json:"status"`
+	CurrentUserType string `json:"currentusertype"`
+}
+
+// dados mockados para teste antes de ser com o banco, apenas para testar a rota de GET
 func UsersData() []USERS {
 
 	users := []USERS{
