@@ -1,17 +1,18 @@
 package router
 
 import (
+	"github.com/Lanmgomez/go-gin-api/internal/domain/user"
 	"github.com/gin-gonic/gin"
 )
 
-func Routers(c *gin.Context) {
+func Routers() *gin.Engine {
 	router := gin.Default()
 
-	router.GET("/users" /* função para rota */)
-	router.GET("/users/:id" /* função para rota */)
-	router.POST("/users" /* função para rota */)
-	router.PUT("/users/:id" /* função para rota */)
-	router.PUT("/users/updatestatus" /* função para rota */)
+	router.GET("/users", user.GetUsers)
+	router.GET("/users/:id", user.GetUserByID)
+	router.POST("/users", user.PostUsers)
+	router.PUT("/users/:id", user.UpdateUser)
+	router.PUT("/users/updatestatus", user.UpdateUserStatus)
 
-	router.Run(":5000")
+	return router
 }

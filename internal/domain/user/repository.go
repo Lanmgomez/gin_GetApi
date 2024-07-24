@@ -1,4 +1,3 @@
-// aqui vai o acesso ao banco de dados
 package user
 
 import (
@@ -27,5 +26,3 @@ func InitDB(c *gin.Context) {
 		log.Fatal(err)
 	}
 }
-
-// enviar a função InitDB no service.go para as funções de rotas acessar ?
