@@ -13,6 +13,7 @@ func Routers() *gin.Engine {
 	router.POST("/users", user.PostUsers)
 	router.PUT("/users/:id", user.UpdateUser)
 	router.PUT("/users/updatestatus", user.UpdateUserStatus)
+	router.DELETE("/users/:id", user.DeleteUserByID)
 
 	return router
 }

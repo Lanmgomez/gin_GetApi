@@ -19,8 +19,14 @@ func parseParamIDtoInt(id string) int {
 	return int(parsedID)
 }
 
-func checkIfUserIsAdmin(c *gin.Context) bool {
-	var input USER_STATUS_UPDATE_INPUT
+func checkIfUserIsAdmin(c *gin.Context, input USER_STATUS_UPDATE_INPUT) bool {
+
+	if err := c.BindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return false
+	}
 
 	if input.CurrentUserType != "ADMIN" {
 		c.JSON(http.StatusForbidden, gin.H{

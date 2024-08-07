@@ -62,7 +62,7 @@ func GetUsers(c *gin.Context) {
 		users = append(users, user)
 	}
 
-	c.JSON(http.StatusOK, true)
+	c.JSON(http.StatusOK, users)
 }
 
 func GetUserByID(context *gin.Context) {
@@ -153,16 +153,9 @@ func UpdateUser(c *gin.Context) {
 func UpdateUserStatus(c *gin.Context) {
 	var input USER_STATUS_UPDATE_INPUT
 
-	permissionToUpdate := checkIfUserIsAdmin(c)
+	permissionToUpdate := checkIfUserIsAdmin(c, input)
 
 	if !permissionToUpdate {
-		return
-	}
-
-	if err := c.BindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
 		return
 	}
 
@@ -170,6 +163,32 @@ func UpdateUserStatus(c *gin.Context) {
 		input.Status,
 		input.UserID,
 	)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, true)
+}
+
+// teste - exclusão física
+func DeleteUserByID(c *gin.Context) {
+	id := c.Param("id")
+	parsedIDtoInt := parseParamIDtoInt(id)
+
+	var deleteUserID USERS
+
+	if err := c.BindJSON(&deleteUserID); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	_, err := db.Exec("DELETE FROM users WHERE id = ?", parsedIDtoInt)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
