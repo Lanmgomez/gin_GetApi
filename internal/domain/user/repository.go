@@ -29,8 +29,9 @@ func InitDB(c *gin.Context) {
 }
 
 func GetUsers(c *gin.Context) {
-	// rows, err := db.Query("SELECT * FROM users")
-	rows, err := db.Query("SELECT ID, Name, Email, CreateAt, UpdatedAt FROM users")
+	var showActiveUsers = "ATIVO"
+	rows, err := db.Query("SELECT * FROM users WHERE Status = ?", showActiveUsers)
+	// rows, err := db.Query("SELECT ID, Name, Email, CreateAt, UpdatedAt FROM users")
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -50,6 +51,7 @@ func GetUsers(c *gin.Context) {
 			&user.ID,
 			&user.Name,
 			&user.Email,
+			&user.Status,
 			&user.CreateAt,
 			&user.UpdatedAt,
 		); err != nil {
@@ -70,14 +72,15 @@ func GetUserByID(context *gin.Context) {
 
 	parsedIDtoInt := parseParamIDtoInt(id)
 
-	// row := db.QueryRow("SELECT * FROM users WHERE id = ?", parsedIDtoInt)
-	row := db.QueryRow("SELECT ID, Name, Email, CreateAt, UpdatedAt FROM users WHERE id = ?", parsedIDtoInt)
+	row := db.QueryRow("SELECT * FROM users WHERE id = ?", parsedIDtoInt)
+	// row := db.QueryRow("SELECT ID, Name, Email, CreateAt, UpdatedAt FROM users WHERE id = ?", parsedIDtoInt)
 	var user USERS
 
 	if err := row.Scan(
 		&user.ID,
 		&user.Name,
 		&user.Email,
+		&user.Status,
 		&user.CreateAt,
 		&user.UpdatedAt,
 	); err != nil {
@@ -189,6 +192,36 @@ func DeleteUserByID(c *gin.Context) {
 	}
 
 	_, err := db.Exec("DELETE FROM users WHERE id = ?", parsedIDtoInt)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, true)
+}
+
+// teste Delete lóogico
+func DeleteLogicalUserByID(c *gin.Context) {
+	id := c.Param("id")
+	parsedIDtoInt := parseParamIDtoInt(id)
+
+	var logicDelete USERS
+	var inactiveUser = "INATIVO"
+
+	if err := c.BindJSON(&logicDelete); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	_, err := db.Exec("UPDATE users SET Status = ? WHERE id = ?",
+		inactiveUser,
+		parsedIDtoInt,
+	)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
